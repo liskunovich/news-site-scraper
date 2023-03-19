@@ -7,8 +7,7 @@ from main import WebSite
 
 
 class Baigenews(WebSite):
-    db_url = 'https://baigenews.kz/'
-    name = 'baigenews'
+    source = 'baigenews'
 
     def __init__(self, base_url: str, news_url: str):
         super().__init__(base_url, news_url)
@@ -24,17 +23,15 @@ class Baigenews(WebSite):
             data.append(
                 {
                     'id': link[20:],
-                    'network_name': self.name,
+                    'source': self.source,
                     'created': soup.find('meta', property='article:published_time')['content'],
-                    'text': ([p.text.strip() for p in container.find_all('p')][:-4]),
-                    'like_count': 0,
-                    'page': self.base_url,
+                    'text': ([p.text.strip() for p in container.find_all('p')]),
                     'url': link,
                     'tags':  [tag.text.replace('#', '').lower() for tag in tags],
                     'comments': ['']
                 }
             )
-            return data
+        return data
 
     async def get_posts(self) -> List[dict]:
         response = await self.get_response(self.news_url)
